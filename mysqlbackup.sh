@@ -13,7 +13,7 @@ DATABASE_NAME=`echo $DATABASE_CONN_NAME | sed 's/\(Database \|mysql \|sys \|info
 TIME=`date +%F`
 
 for DB_NAME in $DATABASE_NAME;do
-  $MySQLDUMP --lock-all-tables --routines --triggers --master-data=2 --flush-logs -ubackup -hlocalhost -p'wLJt+hYgiHO4P3YsjzPwmE0d4jM+' $DB_NAME > $BACKUP_PATH/$DB_NAME-$TIME.sql
+  $MySQLDUMP--set-gtid-purged=OFF --single-transaction --routines --triggers --master-data=2 --flush-logs -ubackup -hlocalhost -p'wLJt+hYgiHO4P3YsjzPwmE0d4jM+' $DB_NAME > $BACKUP_PATH/$DB_NAME-$TIME.sql
   #echo $DB_NAME-$TIME
   tar -czf $BACKUP_PATH/$DB_NAME-$TIME.tar.gz $BACKUP_PATH/$DB_NAME-$TIME.sql
   find $BACKUP_PATH -type f -name "*.sql" | xargs rm -rf
