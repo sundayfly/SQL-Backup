@@ -23,7 +23,7 @@ for /f "delims=" %%i in (dbname.txt) do if not exist %backupfolder%\%%i mkdir %b
 
 rem 读取dbname.txt文件遍历备份数据库
 for /f "delims=" %%i in (dbname.txt) do  sqlcmd -U xwx -P "12345!@#$%%" -S localhost -Q "backup database %%i to disk='%bakfolder%'" >> sqlbackup.log
-rem 若注意密码包含一个%，则要%%表示,命令才能识别。
+rem 注意若密码包含一个%，则要%%表示,命令才能识别。
 
 rem 读取dbname.txt文件遍历压缩数据库备份文件
 for /f "delims=" %%i in (dbname.txt) do  "C:\Program Files\WinRAR\RAR.exe" a -ep1 -r -o+ -m5 -s -df "%rarfolder%" "%bakfolder%" >> sqlbackup.log
