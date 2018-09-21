@@ -1,7 +1,7 @@
 @ECHO ON
-rem ×÷Õß: sunday
-rem ÈÕÆÚ: 20180620
-rem ËµÃ÷£ºSQL Server±¸·Ý×Ô¶¯»¯
+rem ä½œè€…: sunday
+rem æ—¥æœŸ: 20180620
+rem è¯´æ˜Žï¼šSQL Serverå¤‡ä»½è‡ªåŠ¨åŒ–
 
 set d=%date:~0,10%
 set d=%date:~0,4%%date:~5,2%%date:~8,2%
@@ -9,21 +9,22 @@ set t=%time:~0,5%
 
 set stamp=%p%%d%
 set backupfolder=F:\DatabaseBackup
+set logfolder=%backupfolder%\sqlbackup.log
 set rarfolder=%backupfolder%\%%i\%%i-%stamp%.rar
 set bakfolder=%backupfolder%\%%i\%%i-%stamp%.bak
 
-echo %date% %time% >> sqlbackup.log
+echo %date% %time% > %logfolder%
 
-rem ¶ÁÈ¡Êý¾Ý¿âÃûÐ´Èëdbname.txt
-sqlcmd -U XWX_ERP -P "XWX_ERP12345" -S localhost -Q "select name from sysdatabases where name != 'model' and name != 'master' and name != 'msdb' and name != 'tempdb' and name != 'ReportServer' and name != 'ReportServerTempDB' and name != 'ReportServerTempDB' and name != 'tempdb'" | sed 's/\-\-.*\-//g' | grep -v name | grep -v (.*) | sed 's/ \+/\n/g' > dbname.txt
+rem è¯»å–æ•°æ®åº“åå†™å…¥dbname.txt
+sqlcmd -U userxxx -P "xxx12345" -S localhost -Q "select name from sysdatabases where name != 'model' and name != 'master' and name != 'msdb' and name != 'tempdb' and name != 'ReportServer' and name != 'ReportServerTempDB' and name != 'ReportServerTempDB' and name != 'tempdb'" | sed 's/\-\-.*\-//g' | grep -v name | grep -v (.*) | sed 's/ \+/\n/g' > dbname.txt
 
 
-rem ±éÀú´´½¨¶ÔÓ¦Êý¾Ý¿âÄ¿Â¼
-for /f "delims=" %%i in (dbname.txt) do if not exist %backupfolder%\%%i mkdir %backupfolder%\%%i >> sqlbackup.log
+rem éåŽ†åˆ›å»ºå¯¹åº”æ•°æ®åº“ç›®å½•
+for /f "delims=" %%i in (dbname.txt) do if not exist %backupfolder%\%%i mkdir %backupfolder%\%%i >> %logfolder%
 
-rem ¶ÁÈ¡dbname.txtÎÄ¼þ±éÀú±¸·ÝÊý¾Ý¿â
-for /f "delims=" %%i in (dbname.txt) do  sqlcmd -U xwx -P "12345!@#$%%" -S localhost -Q "backup database %%i to disk='%bakfolder%'" >> sqlbackup.log
-rem ×¢ÒâÈôÃÜÂë°üº¬Ò»¸ö%£¬ÔòÒª%%±íÊ¾,ÃüÁî²ÅÄÜÊ¶±ð¡£
+rem è¯»å–dbname.txtæ–‡ä»¶éåŽ†å¤‡ä»½æ•°æ®åº“
+for /f "delims=" %%i in (dbname.txt) do  sqlcmd -U xwx -P "12345!@#$%%" -S localhost -Q "backup database %%i to disk='%bakfolder%'" >> %logfolder%
+rem æ³¨æ„è‹¥å¯†ç åŒ…å«ä¸€ä¸ª%ï¼Œåˆ™è¦%%è¡¨ç¤º,å‘½ä»¤æ‰èƒ½è¯†åˆ«ã€‚
 
-rem ¶ÁÈ¡dbname.txtÎÄ¼þ±éÀúÑ¹ËõÊý¾Ý¿â±¸·ÝÎÄ¼þ
-for /f "delims=" %%i in (dbname.txt) do  "C:\Program Files\WinRAR\RAR.exe" a -ep1 -r -o+ -m5 -s -df "%rarfolder%" "%bakfolder%" >> sqlbackup.log
+rem è¯»å–dbname.txtæ–‡ä»¶éåŽ†åŽ‹ç¼©æ•°æ®åº“å¤‡ä»½æ–‡ä»¶
+for /f "delims=" %%i in (dbname.txt) do  "C:\Program Files\WinRAR\RAR.exe" a -ep1 -r -o+ -m5 -s -df "%rarfolder%" "%bakfolder%" >> %logfolder%
