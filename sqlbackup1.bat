@@ -5,17 +5,16 @@ set t=%time:~0,5%
 
 set stamp=%p%%d%
 set bakupfolder=F:\DatabaseBackup\
-rem 1按子目录保存备份文件;0不按   
+rem 1鎸夊瓙鐩綍淇濆瓨澶囦唤鏂囦欢;0涓嶆寜   
 set lay_in_subfolder=1
 
-rem 表示注释
+rem 琛ㄧず娉ㄩ噴
 rem call :backupone xwx
-rem 要备份的数据库名
-call :backupone xwx_pay
-call :backupone xwx_record
-call :backupone xwx_company
-call :backupone yyq_shop
-call :backupone yyq_record
+rem 瑕佸浠界殑鏁版嵁搴撳悕
+call :backupone xxx_pay
+call :backupone xxx_record
+
+
 
 goto :EOF  
 
@@ -31,7 +30,7 @@ if %lay_in_subfolder%==1 (
 set subfolder=%dbname%\
 )else set subfolder=
 rem echo %bakupfolder%%subfolder%%dbname%%stamp%.bak
-sqlcmd -U xwx -P "xwx12345!@#$%%" -S localhost -Q "backup database %dbname% to disk='%bakupfolder%%subfolder%%dbname%%stamp%.bak'"
+sqlcmd -U userxxx -P "xxx%%" -S localhost -Q "backup database %dbname% to disk='%bakupfolder%%subfolder%%dbname%%stamp%.bak'"
 "C:\Program Files\WinRAR\RAR.exe" a -ep1 -r -o+ -m5 -s -df "%bakupfolder%%subfolder%%dbname%%stamp%".rar "%bakupfolder%%subfolder%%dbname%%stamp%.bak"
 
 endlocal&goto :EOF
