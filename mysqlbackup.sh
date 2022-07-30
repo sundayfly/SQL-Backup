@@ -1,22 +1,24 @@
 #!/bin/bash
 # author: sunday
 # date: 20180611
-# 排除数据库，自动化备份所有数据库
+# 鎺掗櫎鏁版嵁搴擄紝鑷姩鍖栧浠芥墍鏈夋暟鎹簱
 #GRANT SELECT, SHOW DATABASES, LOCK TABLES, EVENT,SHOW VIEW, RELOAD,SUPER,REPLICATION CLIENT ON *.* TO 'backup'@'localhost' identified by 'wLJt+hYgiHO4P3YsjzPwmE0d4jM+';
 #flush privileges;
+#DATABASE_NAME=`echo $DATABASE_CONN_NAME | sed 's/\(Database \|mysql \|sys \|information_schema \|performance_schema\|mall202[0-9]\{5,\}\|mall_amusic_shop_buffer[0-9]\)//g'`
+export PATH=/usr/local/webserver/mysql/bin/:$PATH
 
-MySQL=/usr/local/webserver/mysql/bin/mysql
-MySQLDUMP=/usr/local/webserver/mysql/bin/mysqldump
-BACKUP_PATH=/data/bak/mysql
-DATABASE_CONN_NAME=`$MySQL -ubackup -hlocalhost -p'wLJt+hYgiHO4P3YsjzPwmE0d4jM+' -e "show databases;"`
-DATABASE_NAME=`echo $DATABASE_CONN_NAME | sed 's/\(Database \|mysql \|sys \|information_schema \|performance_schema \)//g'`
+BACKUP_PATH=/data/bak/local/mysql
+SECRET="-ubackup -hlocalhost -pwLJt+hYgiHO4P3Ysd4jM+"
 TIME=`date +%F`
 
-for DB_NAME in $DATABASE_NAME;do
-  $MySQLDUMP--set-gtid-purged=OFF --single-transaction --routines --triggers --master-data=2 --flush-logs -ubackup -hlocalhost -p'wLJt+hYgiHO4P3YsjzPwmE0d4jM+' $DB_NAME > $BACKUP_PATH/$DB_NAME-$TIME.sql
-  #echo $DB_NAME-$TIME
-  tar -czf $BACKUP_PATH/$DB_NAME-$TIME.tar.gz $BACKUP_PATH/$DB_NAME-$TIME.sql
-  find $BACKUP_PATH -type f -name "*.sql" | xargs rm -rf
-  #find $BACKUP_PATH -type f -name "*.sql.tar.gz" -mtime +7 | xargs rm -rf
+#鍒楄〃
+DB_NAMES=(`mysql $SECRET -e "show databases;" | grep -Ev "Database|mysql|sys|_schema|_buffer|_access_log|_test"`)
+
+
+for DB_NAME in ${DB_NAMES[*]};do
+    mysqldump $SECRET --default-character-set=utf8mb4 --set-gtid-purged=OFF --single-transaction --master-data=2 --triggers --routines --events --hex-blob $DB_NAME > $BACKUP_PATH/$DB_NAME-$TIME.sql
+    tar -czf $BACKUP_PATH/$DB_NAME-$TIME.tar.gz $BACKUP_PATH/$DB_NAME-$TIME.sql
+    find $BACKUP_PATH -type f -name "*.sql" | xargs rm -rf
 done
 
+find $BACKUP_PATH -type f -name "*.tar.gz" -mtime +365 | xargs rm -rf
