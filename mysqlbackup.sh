@@ -13,10 +13,11 @@ TIME=`date +%F`
 #列表
 DB_NAMES=(`mysql $SECRET -e "show databases;" | grep -Ev "Database|mysql|sys|_schema|_buffer|_access_log|_test"`)
 
+[ -d $BACKUP_PATH ] || mkdir $BACKUP_PATH
+
 for DB_NAME in ${DB_NAMES[*]};do
-    mysqldump $SECRET --default-character-set=utf8mb4 --set-gtid-purged=OFF --single-transaction --master-data=2 --triggers --routines --events --hex-blob $DB_NAME > $BACKUP_PATH/$DB_NAME-$TIME.sql
-    tar -czf $BACKUP_PATH/$DB_NAME-$TIME.tar.gz $BACKUP_PATH/$DB_NAME-$TIME.sql
-    find $BACKUP_PATH -type f -name "*.sql" | xargs rm -rf
+    mysqldump $SECRET --default-character-set=utf8mb4 --set-gtid-purged=OFF --single-transaction --master-data=2 --triggers \
+    --routines --events --hex-blob $DB_NAME | gzip > $BACKUP_PATH/$DB_NAME-$TIME.tar.gz
 done
 
 find $BACKUP_PATH -type f -name "*.tar.gz" -mtime +365 | xargs rm -rf
