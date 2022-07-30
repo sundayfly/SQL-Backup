@@ -2,7 +2,7 @@
 # author: sunday
 # date: 20180611
 # 排除数据库，自动化备份所有数据库
-#GRANT SELECT, SHOW DATABASES, LOCK TABLES, EVENT,SHOW VIEW, RELOAD,SUPER,REPLICATION CLIENT ON *.* TO 'backup'@'localhost' identified by 'wLJt+hYgiHO4P3YsjzPwmE0d4jM+';
+#GRANT SELECT, SHOW DATABASES, LOCK TABLES, EVENT,SHOW VIEW, RELOAD,SUPER,REPLICATION CLIENT ON *.* TO 'backup'@'localhost' identified by 'wLJt+hYgiHO4P3Ysd4jM+';
 #flush privileges;
 #DATABASE_NAME=`echo $DATABASE_CONN_NAME | sed 's/\(Database \|mysql \|sys \|information_schema \|performance_schema\|mall202[0-9]\{5,\}\|mall_amusic_shop_buffer[0-9]\)//g'`
 export PATH=/usr/local/webserver/mysql/bin/:$PATH
